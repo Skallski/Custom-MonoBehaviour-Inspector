@@ -1,0 +1,17 @@
+{
+  "name": "com.skallu.better-editor-tools",
+  "version": "1.0.0",
+  "displayName": "Better Editor Tools",
+  "description": "Tools for Unity editor",
+  "unity": "2020.3",
+  "keywords": [
+    "Skallu",
+    "editor",
+    "tools"
+  ],
+  "author": {
+    "name": "Skallu",
+    "email": "kaminski.patryk@hotmail.com",
+    "url": "https://github.com/Skallu0711"
+  }
+}
