@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 
 namespace BetterEditorTools.Editor.Utils
 {
-    public static class EditorHeaderGuiInitializer
+    public static class EditorHeaderGuiHandler
     {
         public const float HEADER_SPACE = 20;
 

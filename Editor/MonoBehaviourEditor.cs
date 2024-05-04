@@ -9,24 +9,23 @@ namespace BetterEditorTools.Editor.CustomEditors
     [CustomEditor(typeof(MonoBehaviour), true)]
     public class MonoBehaviourEditor : UnityEditor.Editor
     {
-        private MethodButtonAttributeHandler.CustomMethodInfo[] _methodsToShow;
         private GUIStyle _iconStyle;
         
         private void OnEnable()
         {
-            EditorHeaderGuiInitializer.OnDrawHeaderGUIEvent += OnHeaderItemGUI;
-            EditorHeaderGuiInitializer.InitializeHeaderGUI(target as MonoBehaviour);
+            EditorHeaderGuiHandler.OnDrawHeaderGUIEvent += OnHeaderItemGUI;
+            EditorHeaderGuiHandler.InitializeHeaderGUI(target as MonoBehaviour);
         }
 
         private void OnDisable()
         {
-            EditorHeaderGuiInitializer.OnDrawHeaderGUIEvent -= OnHeaderItemGUI;
+            EditorHeaderGuiHandler.OnDrawHeaderGUIEvent -= OnHeaderItemGUI;
         }
 
         protected virtual void OnHeaderItemGUI(Rect rect, Object targetObject)
         {
             DrawEditButton(rect, targetObject);
-            rect.x -= EditorHeaderGuiInitializer.HEADER_SPACE;
+            rect.x -= EditorHeaderGuiHandler.HEADER_SPACE;
             DrawMethodsButton(rect, targetObject);
         }
 
@@ -35,7 +34,7 @@ namespace BetterEditorTools.Editor.CustomEditors
             GUIContent content = new GUIContent(string.Empty, EditorGUIUtility.IconContent("editicon.sml").image,
                 "Edit Script");
             
-            EditorHeaderGuiInitializer.DrawHeaderButton(rect, content, () => 
+            EditorHeaderGuiHandler.DrawHeaderButton(rect, content, () => 
                 {
                     MonoScript script = MonoScript.FromMonoBehaviour((MonoBehaviour)targetObject);
                     if (script != null)
@@ -52,35 +51,28 @@ namespace BetterEditorTools.Editor.CustomEditors
 
         private void DrawMethodsButton(Rect rect, Object targetObject)
         {
-            MethodButtonAttributeHandler.CustomMethodInfo[] methods = 
-                MethodButtonAttributeHandler.GetObjectMethods(target, ref _methodsToShow);
-            if (methods == null)
-            {
-                return;
-            }
-
             GUIContent content = new GUIContent(string.Empty,
                 EditorGUIUtility.IconContent("d_Profiler.UIDetails").image,
                 "Display Serialized Methods");
             
-            EditorHeaderGuiInitializer.DrawHeaderButton(rect, content, () =>
+            EditorHeaderGuiHandler.DrawHeaderButton(rect, content, () => 
                 {
                     GenericMenu menu = new GenericMenu();
                 
-                    int len = methods.Length;
-                    if (len == 0)
+                    MethodInfo[] methods = MethodButtonAttributeHandler.GetObjectMethods(targetObject);
+                    if (methods == null || methods.Length == 0)
                     {
                         menu.AddItem(new GUIContent("No serialized methods to display"), false, () => {});
                     }
                     else
                     {
-                        for (int i = 0, c = len; i < c; i++)
+                        for (int i = 0, c = methods.Length; i < c; i++)
                         {
                             int index = i;
-                            MethodButtonAttributeHandler.CustomMethodInfo method = methods[i];
+                            MethodInfo customMethodInfo = methods[i];
 
-                            menu.AddItem(new GUIContent($"{index}: {method.Signature}"), false,
-                                () => method.Method.Invoke(target, null));
+                            menu.AddItem(new GUIContent($"{index}: {customMethodInfo.Name}"), false,
+                                () => customMethodInfo.Invoke(targetObject, null));
                         }
                     }
 

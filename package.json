@@ -1,6 +1,6 @@
 {
   "name": "com.skallu.better-editor-tools",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "Better Editor Tools",
   "description": "Tools for Unity editor",
   "unity": "2020.3",
