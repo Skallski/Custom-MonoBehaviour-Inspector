@@ -17,12 +17,13 @@ namespace BetterEditorTools.Editor.EditorWindows
         {
             TmpFinder window = GetWindow<TmpFinder>();
             window.titleContent = new GUIContent("Tmp Finder");
+            window.minSize = new Vector2(460, 460);
             window.Show();
         }
 
         private void OnGUI()
         {
-            GUILayout.Label("Enter Text to Search for in TextMeshProUGUI Component:");
+            GUILayout.Label("Search for a TextMeshProUGUI component in active scene by entering the text");
             
             EditorGUI.BeginChangeCheck();
             _searchText = EditorGUILayout.TextArea(_searchText, GUILayout.Height(60));
@@ -54,26 +55,39 @@ namespace BetterEditorTools.Editor.EditorWindows
 
         private void ShowSearchResults()
         {
-            for (int i = 0; i < _searchResults.Count; i++)
+            if (_searchResults.Count > 0)
             {
-                TextMeshProUGUI tmp = _searchResults[i];
-
-                if (_selectedButtonIndex == i)
+                EditorGUILayout.LabelField("Results:");
+                EditorGUILayout.Space();
+                
+                for (int i = 0; i < _searchResults.Count; i++)
                 {
-                    GUI.backgroundColor = Color.yellow;
-                }
+                    TextMeshProUGUI tmp = _searchResults[i];
 
-                if (GUILayout.Button($"{tmp.text}"))
+                    if (_selectedButtonIndex == i)
+                    {
+                        GUI.backgroundColor = Color.yellow;
+                    }
+
+                    if (GUILayout.Button($"{tmp.text}"))
+                    {
+                        GameObject tmpObject = tmp.gameObject;
+
+                        EditorGUIUtility.PingObject(tmpObject);
+                        Selection.activeGameObject = tmpObject;
+
+                        _selectedButtonIndex = i;
+                    }
+
+                    GUI.backgroundColor = Color.white;
+                }
+            }
+            else
+            {
+                if (_searchText.Length >= 3)
                 {
-                    GameObject tmpObject = tmp.gameObject;
-
-                    EditorGUIUtility.PingObject(tmpObject);
-                    Selection.activeGameObject = tmpObject;
-
-                    _selectedButtonIndex = i;
+                    EditorGUILayout.LabelField("No results found");
                 }
-
-                GUI.backgroundColor = Color.white;
             }
         }
     }

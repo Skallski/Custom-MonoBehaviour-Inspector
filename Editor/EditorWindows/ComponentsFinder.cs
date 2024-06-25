@@ -10,7 +10,7 @@ namespace BetterEditorTools.Editor.EditorWindows
     public class ComponentsFinder : ResizableWindowBase
     {
         private int _currentToolbarTab;
-        private string[] _toolbarHeaders = new string[] { "Find component", "Find missing" };
+        private string[] _toolbarHeaders = new string[] { "Search by component", "Find all missing" };
         
         private string _searchQuery = "";
         private List<Type> _searchResults;
@@ -22,19 +22,17 @@ namespace BetterEditorTools.Editor.EditorWindows
         private int _selectedLeftButtonIndex = -1;
         private int _selectedRightButtonIndex = -1;
         
+        private GUIStyle _labelStyle;
+
+        protected override float LeftPanelWidthMin => 275;
+        protected override float RightPanelWidthMin => 450;
+
         [MenuItem("SkalluUtils/Tools/Components Finder")]
         private static void OpenWindow()
         {
             ComponentsFinder window = GetWindow<ComponentsFinder>();
             window.titleContent = new GUIContent("Components Finder");
             window.Show();
-        }
-
-        private GUIStyle _labelStyle;
-        
-        private void OnEnable()
-        {
-            minSize = new Vector2(leftPanelWidthMin + rightPanelWidthMin, panelHeightMin);
         }
 
         protected override void DrawGUI()
@@ -81,7 +79,7 @@ namespace BetterEditorTools.Editor.EditorWindows
             }
             else
             {
-                EditorGUILayout.HelpBox("All GameObjects with missing components will be displayed on the right",
+                EditorGUILayout.HelpBox("All GameObjects in the active scene that have missing components will be displayed in the right panel",
                     MessageType.Info);
             }
 
@@ -114,11 +112,10 @@ namespace BetterEditorTools.Editor.EditorWindows
             {
                 Type type = _searchResults[i];
                 int index = i;
-                ShowSelectionButton(index, type.Name, () =>
+                ShowSelectionButton(ref _selectedLeftButtonIndex, index, type.Name, () =>
                 {
                     _selectedComponent = type;
-                    _selectedLeftButtonIndex = index;
-                    _selectedRightButtonIndex = -1;
+                    _selectedRightButtonIndex = -1; // de-highlight right button when left is clicked
                 });
             }
         }
@@ -149,7 +146,8 @@ namespace BetterEditorTools.Editor.EditorWindows
                     }
 
                     found = true;
-                    ShowSelectionButton(i, $"{sceneObject.name}: {_selectedComponent.Name}", () =>
+                    ShowSelectionButton(ref _selectedRightButtonIndex, i, 
+                        $"{sceneObject.name}: {_selectedComponent.Name}", () =>
                     {
                         EditorGUIUtility.PingObject(sceneObject);
                         Selection.activeObject = sceneObject;
@@ -158,7 +156,7 @@ namespace BetterEditorTools.Editor.EditorWindows
                 
                 if (found == false)
                 {
-                    EditorGUILayout.LabelField($"No GameObjects with {_selectedComponent.Name} found!", 
+                    EditorGUILayout.LabelField($"No GameObjects with {_selectedComponent.Name} has been found in active scene.", 
                         _labelStyle,GUILayout.ExpandWidth(true));
                 }
             }
@@ -172,7 +170,7 @@ namespace BetterEditorTools.Editor.EditorWindows
                     for (int i = 0; i < length; i++)
                     {
                         GameObject obj = objectsWithMissingScripts[i];
-                        ShowSelectionButton(i, obj.name, () =>
+                        ShowSelectionButton(ref _selectedRightButtonIndex,i, obj.name, () =>
                         {
                             EditorGUIUtility.PingObject(obj);
                             Selection.activeObject = obj;
@@ -181,15 +179,15 @@ namespace BetterEditorTools.Editor.EditorWindows
                 }
                 else
                 {
-                    EditorGUILayout.LabelField("No GameObjects with missing components found!",
+                    EditorGUILayout.LabelField("No GameObjects with missing components has been found in active scene.",
                         _labelStyle, GUILayout.ExpandWidth(true));
                 }
             }
         }
 
-        private void ShowSelectionButton(int index, string buttonName, Action onSelected)
+        private void ShowSelectionButton(ref int buttonIndex, int selectedIndex, string buttonName, Action onSelected)
         {
-            if (_selectedRightButtonIndex == index)
+            if (buttonIndex == selectedIndex)
             {
                 GUI.backgroundColor = Color.yellow;
             }
@@ -197,8 +195,7 @@ namespace BetterEditorTools.Editor.EditorWindows
             if (GUILayout.Button(buttonName))
             {
                 onSelected?.Invoke();
-
-                _selectedRightButtonIndex = index;
+                buttonIndex = selectedIndex;
             }
                 
             GUI.backgroundColor = Color.white;

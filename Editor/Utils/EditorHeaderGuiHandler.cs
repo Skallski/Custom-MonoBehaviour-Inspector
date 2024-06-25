@@ -11,7 +11,6 @@ namespace BetterEditorTools.Editor.Utils
     public static class EditorHeaderGuiHandler
     {
         public const float HEADER_SPACE = 20;
-
         public static Action<Rect, Object> OnDrawHeaderGUIEvent;
 
         public static void InitializeHeaderGUI(MonoBehaviour targetMonoBehaviour)

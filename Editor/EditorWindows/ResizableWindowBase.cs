@@ -8,14 +8,23 @@ namespace BetterEditorTools.Editor.EditorWindows
     /// </summary>
     public abstract class ResizableWindowBase : EditorWindow
     {
-        protected float leftPanelWidthMin = 250f;
-        protected float rightPanelWidthMin = 350f;
-        protected float panelHeightMin = 400f;
+        protected virtual float LeftPanelWidthMin => 250f;
+        protected virtual float RightPanelWidthMin => 350f;
+        protected virtual float PanelHeightMin => 400f;
+
+        private float _leftPanelWidth;
+        private float _rightPanelWidth;
         
-        protected float leftPaneWidth = 250f;
-        protected float rightPanelWidth = 350f;
         private const float SeparatorWidth = 5f;
         private bool _isResizing;
+
+        private void OnEnable()
+        {
+            _leftPanelWidth = LeftPanelWidthMin;
+            _rightPanelWidth = RightPanelWidthMin;
+            
+            minSize = new Vector2(LeftPanelWidthMin + RightPanelWidthMin, PanelHeightMin);
+        }
 
         private void OnGUI()
         {
@@ -37,14 +46,14 @@ namespace BetterEditorTools.Editor.EditorWindows
 
         protected void DrawLeftPane()
         {
-            GUILayout.BeginArea(new Rect(0, 0, leftPaneWidth, position.height));
+            GUILayout.BeginArea(new Rect(0, 0, _leftPanelWidth, position.height));
             OnGUILeftSide();
             GUILayout.EndArea();
         }
 
         protected void DrawRightPane()
         {
-            GUILayout.BeginArea(new Rect(leftPaneWidth + SeparatorWidth, 0, rightPanelWidth, position.height));
+            GUILayout.BeginArea(new Rect(_leftPanelWidth + SeparatorWidth, 0, _rightPanelWidth, position.height));
             OnGuiRightSide();
             GUILayout.EndArea();
         }
@@ -54,7 +63,7 @@ namespace BetterEditorTools.Editor.EditorWindows
         /// </summary>
         protected void DrawVerticalSeparator()
         {
-            Rect separatorRect = new Rect(leftPaneWidth, 0, SeparatorWidth, position.height);
+            Rect separatorRect = new Rect(_leftPanelWidth, 0, SeparatorWidth, position.height);
             EditorGUIUtility.AddCursorRect(separatorRect, MouseCursor.ResizeHorizontal);
             GUI.Box(separatorRect, GUIContent.none, EditorStyles.helpBox);
         }
@@ -72,7 +81,7 @@ namespace BetterEditorTools.Editor.EditorWindows
         private void HandleResizeEvents()
         {
             Event e = Event.current;
-            Rect separatorRect = new Rect(leftPaneWidth, 0, SeparatorWidth, position.height);
+            Rect separatorRect = new Rect(_leftPanelWidth, 0, SeparatorWidth, position.height);
 
             switch (e.type)
             {
@@ -97,14 +106,14 @@ namespace BetterEditorTools.Editor.EditorWindows
                     {
                         float delta = e.delta.x;
                         
-                        float newLeftWidth = Mathf.Clamp(leftPaneWidth + delta, leftPanelWidthMin,
-                            position.width - rightPanelWidthMin - SeparatorWidth);
+                        float newLeftWidth = Mathf.Clamp(_leftPanelWidth + delta, LeftPanelWidthMin,
+                            position.width - RightPanelWidthMin - SeparatorWidth);
                         
                         float newRightWidth = Mathf.Clamp(position.width - newLeftWidth - SeparatorWidth,
-                            rightPanelWidthMin, position.width - leftPanelWidthMin - SeparatorWidth);
+                            RightPanelWidthMin, position.width - LeftPanelWidthMin - SeparatorWidth);
 
-                        leftPaneWidth = newLeftWidth;
-                        rightPanelWidth = newRightWidth;
+                        _leftPanelWidth = newLeftWidth;
+                        _rightPanelWidth = newRightWidth;
                         
                         Repaint();
                     }
