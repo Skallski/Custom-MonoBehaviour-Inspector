@@ -1,4 +1,3 @@
-using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -21,22 +20,10 @@ namespace CustomMonoBehaviourInspector.Editor
 
         private void OnEnable()
         {
-            if (MonoBehaviourEditorSettingsManager.Settings != null)
-            {
-                MonoBehaviourEditorSettingsManager.Settings.Setup(_showScriptField, _showHeader,
-                    _showHeaderSerializedMethodButton, _showHeaderEditScriptButton);
-            }
-            else
-            {
-                MonoBehaviourEditorSettings instance = ScriptableObject.CreateInstance<MonoBehaviourEditorSettings>();
-                instance.Setup(_showScriptField, _showHeader, _showHeaderSerializedMethodButton, _showHeaderEditScriptButton);
-                
-                AssetDatabase.CreateAsset(instance, MonoBehaviourEditorSettingsManager.SETTINGS_ASSET_PATH);
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
-
-                MonoBehaviourEditorSettingsManager.Settings = instance;
-            }
+            _showScriptField = MonoBehaviourEditorSettingsManager.Settings.ShowScriptField;
+            _showHeader = MonoBehaviourEditorSettingsManager.Settings.ShowHeader;
+            _showHeaderSerializedMethodButton = MonoBehaviourEditorSettingsManager.Settings.ShowHeaderSerializedMethodButton;
+            _showHeaderEditScriptButton = MonoBehaviourEditorSettingsManager.Settings.ShowHeaderEditScriptButton;
         }
 
         private void OnGUI()
@@ -57,11 +44,8 @@ namespace CustomMonoBehaviourInspector.Editor
             
             if (EditorGUI.EndChangeCheck())
             {
-                if (MonoBehaviourEditorSettingsManager.Settings != null)
-                {
-                    MonoBehaviourEditorSettingsManager.Settings.Setup(_showScriptField, _showHeader,
-                        _showHeaderSerializedMethodButton, _showHeaderEditScriptButton);
-                }
+                MonoBehaviourEditorSettingsManager.Settings.Setup(_showScriptField, _showHeader,
+                    _showHeaderSerializedMethodButton, _showHeaderEditScriptButton);
             }
 
             EditorGUILayout.Space();

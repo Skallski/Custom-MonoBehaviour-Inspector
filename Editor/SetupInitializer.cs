@@ -6,9 +6,11 @@ namespace CustomMonoBehaviourInspector.Editor
     public static class SetupInitializer
     {
         private const string PACKAGE_NAME = "custom-monobehaviour-inspector";
-
+        
         static SetupInitializer()
         {
+            MonoBehaviourEditorSettingsManager.Setup(PACKAGE_NAME);
+            
             AssetDatabase.importPackageCompleted += OnImported;
         }
         
@@ -16,13 +18,8 @@ namespace CustomMonoBehaviourInspector.Editor
         {
             if (packageName.Contains(PACKAGE_NAME))
             {
-                Setup();
+                SettingsWindow.OpenWindow();
             }
-        }
-
-        private static void Setup()
-        {
-            SettingsWindow.OpenWindow();
         }
     }
 }
