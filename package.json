@@ -1,6 +1,6 @@
 {
   "name": "com.skallu.custom-monobehaviour-inspector",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "displayName": "Custom MonoBehaviour Inspector",
   "description": "Custom MonoBehaviour Inspector",
   "unity": "2020.3",

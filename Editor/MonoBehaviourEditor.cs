@@ -48,8 +48,8 @@ namespace CustomMonoBehaviourInspector.Editor
                 return;
             }
             
-            GUIContent content = new GUIContent(string.Empty, EditorGUIUtility.IconContent("editicon.sml").image,
-                "Edit Script");
+            GUIContent content = new GUIContent(string.Empty, 
+                EditorGUIUtility.IconContent("editicon.sml").image, "Edit Script");
             
             MonoBehaviourEditorHeaderGUIHandler.DrawHeaderButton(rect, content, () => 
                 {
@@ -74,8 +74,7 @@ namespace CustomMonoBehaviourInspector.Editor
             }
             
             GUIContent content = new GUIContent(string.Empty,
-                EditorGUIUtility.IconContent("d_Profiler.UIDetails").image,
-                "Display Serialized Methods");
+                EditorGUIUtility.IconContent("d_Profiler.UIDetails").image, "Display Serialized Methods");
             
             MonoBehaviourEditorHeaderGUIHandler.DrawHeaderButton(rect, content, () => 
                 {

@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,11 +11,13 @@ namespace CustomMonoBehaviourInspector.Editor
         private bool _showHeaderSerializedMethodButton;
         private bool _showHeaderEditScriptButton;
         
-        [MenuItem("Custom MonoBehaviour Inspector/Settings")]
-        internal static void OpenWindow()
+        [MenuItem("Window/Custom Inspector/MonoBehaviour Inspector Settings")]
+        private static void OpenWindow()
         {
             SettingsWindow window = GetWindow<SettingsWindow>();
-            window.titleContent = new GUIContent("Custom MonoBehaviour Settings");
+            window.titleContent = new GUIContent("MonoBehaviour Inspector Settings", 
+                EditorGUIUtility.IconContent("d__Popup@2x").image);
+            
             window.Show();
         }
 

@@ -2,13 +2,17 @@ using UnityEditor;
 
 namespace CustomMonoBehaviourInspector.Editor
 {
+    [InitializeOnLoad]
     public static class MonoBehaviourEditorSettingsManager
     {
-        public static MonoBehaviourEditorSettings Settings { get; private set; }
+        private const string PACKAGE_NAME = "custom-monobehaviour-inspector";
         
-        internal static void Setup(string packageName)
+        internal static MonoBehaviourEditorSettings Settings { get; private set; }
+
+        static MonoBehaviourEditorSettingsManager()
         {
-            string assetPath = $"Packages/com.skallu.{packageName}/Settings/MonoBehaviourEditorSettings.asset";
+            // setup
+            string assetPath = $"Packages/com.skallu.{PACKAGE_NAME}/Settings/MonoBehaviourEditorSettings.asset";
             Settings = AssetDatabase.LoadAssetAtPath<MonoBehaviourEditorSettings>(assetPath);
         }
     }
