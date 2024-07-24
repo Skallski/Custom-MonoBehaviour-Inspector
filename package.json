@@ -2,10 +2,11 @@
   "name": "com.skallu.custom-monobehaviour-inspector",
   "version": "1.0.5",
   "displayName": "Custom MonoBehaviour Inspector",
-  "description": "Custom MonoBehaviour Inspector",
+  "description": "Customizable inspector for MonoBehaviour classes.",
   "unity": "2020.3",
   "keywords": [
     "Skallu",
+    "custom inspector",
     "editor"
   ],
   "author": {
