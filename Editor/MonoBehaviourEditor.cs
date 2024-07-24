@@ -1,10 +1,12 @@
+using System;
+using System.Linq;
 using System.Reflection;
-using BetterEditorTools.Editor.Utils;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace BetterEditorTools.Editor.CustomEditors
+namespace CustomMonoBehaviourInspector.Editor
 {
     [CustomEditor(typeof(MonoBehaviour), true)]
     public class MonoBehaviourEditor : UnityEditor.Editor
@@ -13,28 +15,43 @@ namespace BetterEditorTools.Editor.CustomEditors
         
         private void OnEnable()
         {
-            EditorHeaderGuiHandler.OnDrawHeaderGUIEvent += OnHeaderItemGUI;
-            EditorHeaderGuiHandler.InitializeHeaderGUI(target as MonoBehaviour);
+            MonoBehaviourEditorHeaderGUIHandler.OnDrawHeaderGUIEvent += OnHeaderItemGUI;
+            MonoBehaviourEditorHeaderGUIHandler.InitializeHeaderGUI(target as MonoBehaviour);
         }
 
         private void OnDisable()
         {
-            EditorHeaderGuiHandler.OnDrawHeaderGUIEvent -= OnHeaderItemGUI;
+            MonoBehaviourEditorHeaderGUIHandler.OnDrawHeaderGUIEvent -= OnHeaderItemGUI;
         }
 
         protected virtual void OnHeaderItemGUI(Rect rect, Object targetObject)
         {
-            DrawEditButton(rect, targetObject);
-            rect.x -= EditorHeaderGuiHandler.HEADER_SPACE;
-            DrawMethodsButton(rect, targetObject);
+            if (MonoBehaviourEditorSettingsManager.Settings == null)
+            {
+                return;
+            }
+
+            if (MonoBehaviourEditorSettingsManager.Settings.ShowHeader == false)
+            {
+                return;
+            }
+
+            DrawEditScriptButton(rect, targetObject);
+            rect.x -= MonoBehaviourEditorHeaderGUIHandler.HEADER_SPACE;
+            DrawSerializedMethodsButton(rect, targetObject);
         }
 
-        private void DrawEditButton(Rect rect, Object targetObject)
+        private static void DrawEditScriptButton(Rect rect, Object targetObject)
         {
+            if (MonoBehaviourEditorSettingsManager.Settings.ShowHeaderEditScriptButton == false)
+            {
+                return;
+            }
+            
             GUIContent content = new GUIContent(string.Empty, EditorGUIUtility.IconContent("editicon.sml").image,
                 "Edit Script");
             
-            EditorHeaderGuiHandler.DrawHeaderButton(rect, content, () => 
+            MonoBehaviourEditorHeaderGUIHandler.DrawHeaderButton(rect, content, () => 
                 {
                     MonoScript script = MonoScript.FromMonoBehaviour((MonoBehaviour)targetObject);
                     if (script != null)
@@ -49,20 +66,25 @@ namespace BetterEditorTools.Editor.CustomEditors
             );
         }
 
-        private void DrawMethodsButton(Rect rect, Object targetObject)
+        private static void DrawSerializedMethodsButton(Rect rect, Object targetObject)
         {
+            if (MonoBehaviourEditorSettingsManager.Settings.ShowHeaderSerializedMethodButton == false)
+            {
+                return;
+            }
+            
             GUIContent content = new GUIContent(string.Empty,
                 EditorGUIUtility.IconContent("d_Profiler.UIDetails").image,
                 "Display Serialized Methods");
             
-            EditorHeaderGuiHandler.DrawHeaderButton(rect, content, () => 
+            MonoBehaviourEditorHeaderGUIHandler.DrawHeaderButton(rect, content, () => 
                 {
                     GenericMenu menu = new GenericMenu();
                 
-                    MethodInfo[] methods = MethodButtonAttributeHandler.GetObjectMethods(targetObject);
+                    MethodInfo[] methods = GetSerializedMethods(targetObject);
                     if (methods == null || methods.Length == 0)
                     {
-                        menu.AddItem(new GUIContent("No serialized methods to display"), false, () => {});
+                        menu.AddDisabledItem(new GUIContent("No serialized methods to display"));
                     }
                     else
                     {
@@ -83,7 +105,14 @@ namespace BetterEditorTools.Editor.CustomEditors
 
         public override void OnInspectorGUI()
         {
-            DrawInspectorFields();
+            if (MonoBehaviourEditorSettingsManager.Settings == null)
+            {
+                DrawDefaultInspector();
+            }
+            else
+            {
+                DrawInspectorFields();
+            }
         }
 
         private void DrawInspectorFields()
@@ -99,13 +128,16 @@ namespace BetterEditorTools.Editor.CustomEditors
             {
                 if (iterator.propertyPath.Equals("m_Script"))
                 {
-                    // using (new EditorGUI.DisabledScope(true))
-                    // {
-                    //     EditorGUILayout.PropertyField(iterator, new GUIContent("Script",
-                    //         showTooltip ? $"{tooltipAttribute.tooltip}" : null), true);
-                    // }
-                    
-                    continue;
+                    if (MonoBehaviourEditorSettingsManager.Settings.ShowScriptField == false)
+                    {
+                        continue;
+                    }
+
+                    using (new EditorGUI.DisabledScope(true))
+                    {
+                        EditorGUILayout.PropertyField(iterator, new GUIContent("Script",
+                            showTooltip ? $"{tooltipAttribute.tooltip}" : null), true);
+                    }
                 }
                 else
                 {
@@ -115,6 +147,22 @@ namespace BetterEditorTools.Editor.CustomEditors
             
             serializedObject.ApplyModifiedProperties();
             EditorGUI.EndChangeCheck();
+        }
+        
+        private static MethodInfo[] GetSerializedMethods([NotNull] Object targetObj)
+        {
+            return targetObj.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(IsMethodValid)
+                .ToArray();
+
+            static bool IsMethodValid([NotNull] MethodInfo m)
+            {
+                return Attribute.IsDefined(m, typeof(SerializeMethodAttribute)) &&
+                       m.GetParameters().Length == 0 &&
+                       m.IsAbstract == false &&
+                       m.IsStatic == false &&
+                       m.ReturnType == typeof(void);
+            }
         }
     }
 }

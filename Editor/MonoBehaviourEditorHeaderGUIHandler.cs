@@ -6,9 +6,9 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace BetterEditorTools.Editor.Utils
+namespace CustomMonoBehaviourInspector.Editor
 {
-    public static class EditorHeaderGuiHandler
+    public static class MonoBehaviourEditorHeaderGUIHandler
     {
         public const float HEADER_SPACE = 20;
         public static Action<Rect, Object> OnDrawHeaderGUIEvent;

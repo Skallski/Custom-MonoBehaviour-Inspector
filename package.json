@@ -1,13 +1,12 @@
 {
-  "name": "com.skallu.better-editor-tools",
-  "version": "1.0.2",
-  "displayName": "Better Editor Tools",
-  "description": "Tools for Unity editor",
+  "name": "com.skallu.custom-monobehaviour-inspector",
+  "version": "1.0.3",
+  "displayName": "Custom MonoBehaviour Inspector",
+  "description": "Custom MonoBehaviour Inspector",
   "unity": "2020.3",
   "keywords": [
     "Skallu",
-    "editor",
-    "tools"
+    "editor"
   ],
   "author": {
     "name": "Skallu",

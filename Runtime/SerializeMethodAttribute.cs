@@ -1,6 +1,6 @@
 using System;
 
-namespace BetterEditorTools.PropertyAttributes
+namespace CustomMonoBehaviourInspector
 {
     [AttributeUsage(AttributeTargets.Method)]
     [System.Diagnostics.Conditional("UNITY_EDITOR")]

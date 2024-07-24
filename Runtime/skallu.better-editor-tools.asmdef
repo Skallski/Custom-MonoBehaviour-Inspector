@@ -1,6 +1,6 @@
 {
-    "name": "skallu.better-editor-tools",
-    "rootNamespace": "BetterEditorTools",
+    "name": "skallu.custom-monobehaviour-inspector",
+    "rootNamespace": "CustomMonoBehaviourInspector",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
