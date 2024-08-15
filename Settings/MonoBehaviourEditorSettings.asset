@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: MonoBehaviourEditorSettings
   m_EditorClassIdentifier: 
   <ShowScriptField>k__BackingField: 0
-  <ShowHeader>k__BackingField: 0
-  <ShowHeaderSerializedMethodButton>k__BackingField: 0
-  <ShowHeaderEditScriptButton>k__BackingField: 0
+  <ShowHeader>k__BackingField: 1
+  <ShowHeaderSerializedMethodButton>k__BackingField: 1
+  <ShowHeaderEditScriptButton>k__BackingField: 1
