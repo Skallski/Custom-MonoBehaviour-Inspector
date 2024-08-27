@@ -1,21 +1,39 @@
+using UnityEditor;
 using UnityEngine;
 
 namespace CustomMonoBehaviourInspector.Editor
 {
     public class MonoBehaviourEditorSettings : ScriptableObject
     {
-        [field: SerializeField] internal bool ShowScriptField { get; private set; }
-        [field: SerializeField] internal bool ShowHeader { get; private set; }
-        [field: SerializeField] internal bool ShowHeaderSerializedMethodButton { get; private set; }
-        [field: SerializeField] internal bool ShowHeaderEditScriptButton { get; private set; }
+        private const string ASSET_PATH = 
+            "Packages/com.Skallski.custom-monobehaviour-inspector/Settings/MonoBehaviourEditorSettings.asset";
         
-        internal void Setup(bool showScriptField, bool showHeader, bool showHeaderSerializedMethodButton, 
-            bool showHeaderEditScriptButton)
+        [field: SerializeField] internal bool ShowScriptField { get; set; }
+        [field: SerializeField] internal bool ShowHeader { get; set; }
+        [field: SerializeField] internal bool ShowHeaderSerializedMethodButton { get; set; }
+        [field: SerializeField] internal bool ShowHeaderEditScriptButton { get; set; }
+
+        private void SetDefaults()
         {
-            ShowScriptField = showScriptField;
-            ShowHeader = showHeader;
-            ShowHeaderSerializedMethodButton = showHeaderSerializedMethodButton;
-            ShowHeaderEditScriptButton = showHeaderEditScriptButton;
+            ShowScriptField = false;
+            ShowHeader = true;
+            ShowHeaderSerializedMethodButton = true;
+            ShowHeaderEditScriptButton = true;
+        }
+
+        internal static MonoBehaviourEditorSettings GetOrCreateInstance()
+        {
+            MonoBehaviourEditorSettings settings = AssetDatabase.LoadAssetAtPath<MonoBehaviourEditorSettings>(ASSET_PATH);
+            if (settings == null)
+            {
+                settings = CreateInstance<MonoBehaviourEditorSettings>();
+                settings.SetDefaults();
+                
+                AssetDatabase.CreateAsset(settings, ASSET_PATH);
+                AssetDatabase.SaveAssets();
+            }
+            
+            return settings;
         }
     }
 }

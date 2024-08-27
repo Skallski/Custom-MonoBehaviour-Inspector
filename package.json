@@ -1,6 +1,6 @@
 {
   "name": "com.skallski.custom-monobehaviour-inspector",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "displayName": "Custom MonoBehaviour Inspector",
   "description": "Customizable inspector for MonoBehaviour classes.",
   "unity": "2020.3",
